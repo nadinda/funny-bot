@@ -26,31 +26,98 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 interface Message {
   content: string;
   sender: "user" | "bot";
 }
 
+interface Joke {
+  [key: string]: string[];
+}
+
 const messages = ref<Message[]>([]);
 const userInput = ref("");
+const categories = ["pun", "programming", "money"];
+
+const jokes: Joke = {
+  pun: [
+    "What kind of TV does a skeleton watch? A skelevision.",
+    "What do you get if you cross a teddy bear with a pig? A teddy boar.",
+    "What do you call a cow with a twitch? Beef jerky.",
+  ],
+  programming: [
+    "Why do programmers prefer dark mode? Because light attracts bugs.",
+    "Why do Java Programmers have to wear glasses? Because they can't see C#",
+    "What happens when developers ask a silly question? They get a silly ANSI.",
+  ],
+  money: [
+    "Where will you always find money? In a dictionary",
+    "Where do frogs put his money? In the river bank.",
+    "What did one penny say to the other penny? Us being together just makes cents.",
+  ],
+};
+
+const askForAnotherJoke = () => {
+  pushBotMessage("Do you want to hear another joke? Type 'yes' or 'no'");
+};
+
+const pushBotMessage = (content: string) => {
+  messages.value.push({
+    content,
+    sender: "bot",
+  });
+};
+
+const pushUserMessage = (content: string) => {
+  messages.value.push({
+    content,
+    sender: "user",
+  });
+};
 
 const sendMessage = () => {
   if (userInput.value.trim() !== "") {
-    messages.value.push({
-      content: userInput.value,
-      sender: "user",
-    });
-
-    messages.value.push({
-      content: "hi",
-      sender: "bot",
-    });
-
+    pushUserMessage(userInput.value);
+    const input = userInput.value.toLowerCase();
+    if (input.includes("yes")) {
+      getJokeByCategory(input);
+    } else if (input.includes("no")) {
+      pushBotMessage("Okay, see you later!");
+    } else {
+      getJokeByCategory(input);
+      askForAnotherJoke();
+    }
     userInput.value = "";
   }
 };
+
+const getJokeByCategory = (input: string) => {
+  const selectedCategory = categories.find((category) =>
+    input.includes(category)
+  );
+  if (selectedCategory) {
+    const jokeIndex = Math.floor(
+      Math.random() * jokes[selectedCategory].length
+    );
+    pushBotMessage(jokes[selectedCategory][jokeIndex]);
+  } else {
+    pushBotMessage(
+      "Please choose a category by typing: 'pun', 'programming', 'money'"
+    );
+  }
+};
+
+const initBotMessage = () => {
+  pushBotMessage(
+    "Welcome! Do you want to hear a joke? Choose a category by typing: 'pun', 'programming', 'money'"
+  );
+};
+
+onMounted(() => {
+  initBotMessage();
+});
 </script>
 
 <style scoped>
