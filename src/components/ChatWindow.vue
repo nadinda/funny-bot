@@ -37,9 +37,16 @@ interface Joke {
   [key: string]: string[];
 }
 
+enum ChatState {
+  SELECT_CATEGORY,
+  ASK_NEW_JOKE,
+  END,
+}
+
 const messages = ref<Message[]>([]);
 const userInput = ref("");
 const categories = ["pun", "programming", "money"];
+const chatStatus = ref(ChatState.SELECT_CATEGORY);
 
 const jokes: Joke = {
   pun: [
@@ -59,10 +66,6 @@ const jokes: Joke = {
   ],
 };
 
-const askForAnotherJoke = () => {
-  pushBotMessage("Do you want to hear another joke? Type 'yes' or 'no'");
-};
-
 const pushBotMessage = (content: string) => {
   messages.value.push({
     content,
@@ -77,42 +80,70 @@ const pushUserMessage = (content: string) => {
   });
 };
 
-const sendMessage = () => {
-  if (userInput.value.trim() !== "") {
-    pushUserMessage(userInput.value);
-    const input = userInput.value.toLowerCase();
-    if (input.includes("yes")) {
-      getJokeByCategory(input);
-    } else if (input.includes("no")) {
-      pushBotMessage("Okay, see you later!");
-    } else {
-      getJokeByCategory(input);
-      askForAnotherJoke();
-    }
-    userInput.value = "";
-  }
+const initBotMessage = () => {
+  pushBotMessage(
+    "Welcome! Do you want to hear a joke? Choose a category by typing: 'pun', 'programming', 'money'"
+  );
 };
 
-const getJokeByCategory = (input: string) => {
-  const selectedCategory = categories.find((category) =>
-    input.includes(category)
+const requestJokeCategory = () => {
+  chatStatus.value = ChatState.SELECT_CATEGORY;
+  pushBotMessage(
+    "Please choose a category by typing: 'pun', 'programming', 'money'"
   );
+};
+
+const handleJokeCategoryRequest = (selectedCategory?: string) => {
   if (selectedCategory) {
     const jokeIndex = Math.floor(
       Math.random() * jokes[selectedCategory].length
     );
     pushBotMessage(jokes[selectedCategory][jokeIndex]);
+    requestNewJoke();
   } else {
     pushBotMessage(
-      "Please choose a category by typing: 'pun', 'programming', 'money'"
+      "I didn't understand. Please choose a category by typing: 'pun', 'programming', 'money'"
     );
   }
 };
 
-const initBotMessage = () => {
-  pushBotMessage(
-    "Welcome! Do you want to hear a joke? Choose a category by typing: 'pun', 'programming', 'money'"
-  );
+const requestNewJoke = () => {
+  chatStatus.value = ChatState.ASK_NEW_JOKE;
+  pushBotMessage("Do you want to hear another joke? Type 'yes' or 'no'");
+};
+
+const handleNewJokeRequest = (input: string) => {
+  if (input.includes("yes")) {
+    requestJokeCategory();
+  } else if (input.includes("no")) {
+    requestEndChat();
+  } else {
+    pushBotMessage("I didn't understand. Please type 'yes' or 'no'");
+  }
+};
+
+const requestEndChat = () => {
+  chatStatus.value = ChatState.END;
+  pushBotMessage("Okay, see you later!");
+};
+
+const sendMessage = () => {
+  if (userInput.value.trim() !== "") {
+    pushUserMessage(userInput.value);
+    const input = userInput.value.toLowerCase();
+    const category = getCategoryFromInput(input);
+
+    if (chatStatus.value === ChatState.SELECT_CATEGORY) {
+      handleJokeCategoryRequest(category);
+    } else if (chatStatus.value === ChatState.ASK_NEW_JOKE) {
+      handleNewJokeRequest(input);
+    }
+    userInput.value = "";
+  }
+};
+
+const getCategoryFromInput = (input: string) => {
+  return categories.find((category) => input.includes(category));
 };
 
 onMounted(() => {
