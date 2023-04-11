@@ -1,4 +1,5 @@
 ## Funny-Bot
+It's live! [Funny-Bot](https://funny-bot.netlify.com/)
 
 The Funny-Bot is a simple chat bot that tells jokes based on user selected categories.
 
