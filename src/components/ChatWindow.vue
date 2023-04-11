@@ -1,5 +1,6 @@
 <template>
   <div class="chat-container">
+    <div class="chat-header">Funny Bot 🤖</div>
     <div class="chat-messages">
       <div
         v-for="(message, index) in messages"
@@ -168,6 +169,13 @@ onMounted(() => {
   background-color: rgb(255, 255, 205);
 }
 
+.chat-header {
+  padding: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  background-color: #ffffff;
+}
+
 .chat-messages {
   flex: 1;
   display: flex;
@@ -216,12 +224,20 @@ onMounted(() => {
   margin-bottom: 10px;
 }
 
+.chat-input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
 .chat-input input[type="text"] {
-  width: 100%;
+  flex: 1;
   padding: 10px;
   border: none;
   border-radius: 10px;
   font-size: 16px;
   outline: none;
+  width: 50vw;
 }
 </style>
