@@ -53,16 +53,22 @@ const jokes: Joke = {
     "What kind of TV does a skeleton watch? A skelevision.",
     "What do you get if you cross a teddy bear with a pig? A teddy boar.",
     "What do you call a cow with a twitch? Beef jerky.",
+    "Can February March? No, but April May.",
+    "Where do rabbits go after they get married? On a bunnymoon.",
   ],
   programming: [
     "Why do programmers prefer dark mode? Because light attracts bugs.",
     "Why do Java Programmers have to wear glasses? Because they can't see C#",
     "What happens when developers ask a silly question? They get a silly ANSI.",
+    "Why did the programmer quit his job? He didn’t get arrays.",
+    "What did 0 say to 1? You're a bit too much.",
   ],
   money: [
     "Where will you always find money? In a dictionary",
     "Where do frogs put his money? In the river bank.",
     "What did one penny say to the other penny? Us being together just makes cents.",
+    "Why do goalkeepers have so much money in the bank? Because they are really good at saving.",
+    "Where does Dracula store his money? In the blood bank.",
   ],
 };
 
@@ -118,7 +124,9 @@ const handleNewJokeRequest = (input: string) => {
   } else if (input.includes("no")) {
     requestEndChat();
   } else {
-    pushBotMessage("I didn't understand. Please type 'yes' or 'no'");
+    pushBotMessage(
+      "I didn't understand. Do you want another joke? Please type 'yes' or 'no'"
+    );
   }
 };
 
